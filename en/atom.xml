@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="https://doc.OtterTrade.com/en/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-US">
+  <id>https://doc.OtterTrade.com/en/</id>
+  <title>Docs Demo</title>
+  <subtitle>A docs demo for OtterTrade</subtitle>
+  <icon>https://doc.OtterTrade.com/favicon.ico</icon>
+  <logo>https://doc.OtterTrade.com/pwa/192x192.png</logo>
+  <updated>2024-06-25T10:13:16.144Z</updated>
+  <generator>@vuepress/plugin-feed</generator>
+  <link rel="self" href="https://doc.OtterTrade.com/en/atom.xml"/>
+  <link rel="alternate" href="https://doc.OtterTrade.com/en/"/>
+</feed>

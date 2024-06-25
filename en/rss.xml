@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="https://doc.OtterTrade.com/en/rss.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <atom:link href="https://doc.OtterTrade.com/en/rss.xml" rel="self" type="application/rss+xml"/>
+    <title>Docs Demo</title>
+    <link>https://doc.OtterTrade.com/en/</link>
+    <description>A docs demo for OtterTrade</description>
+    <language>en-US</language>
+    <pubDate>Tue, 25 Jun 2024 10:13:16 GMT</pubDate>
+    <lastBuildDate>Tue, 25 Jun 2024 10:13:16 GMT</lastBuildDate>
+    <generator>@vuepress/plugin-feed</generator>
+    <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+    <image>
+      <title>Docs Demo</title>
+      <url>https://doc.OtterTrade.com/pwa/192x192.png</url>
+      <link>https://doc.OtterTrade.com/en/</link>
+    </image>
+  </channel>
+</rss>

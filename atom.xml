@@ -1,0 +1,854 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="https://doc.OtterTrade.com/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
+  <id>https://doc.OtterTrade.com/</id>
+  <title>OtterTrade</title>
+  <subtitle>OtterTrade 文档站</subtitle>
+  <icon>https://doc.OtterTrade.com/favicon.ico</icon>
+  <logo>https://doc.OtterTrade.com/pwa/192x192.png</logo>
+  <updated>2024-06-25T10:13:16.143Z</updated>
+  <generator>@vuepress/plugin-feed</generator>
+  <link rel="self" href="https://doc.OtterTrade.com/atom.xml"/>
+  <link rel="alternate" href="https://doc.OtterTrade.com/"/>
+  <category term="OpenApi"/>
+  <category term="快速访问"/>
+  <category term="总目录"/>
+  <category term="快速上手"/>
+  <category term="操作指南"/>
+  <category term="关于"/>
+  <entry>
+    <title type="text">1. 市场模块coin-candle</title>
+    <id>https://doc.OtterTrade.com/open-api/coin-candle.html</id>
+    <link href="https://doc.OtterTrade.com/open-api/coin-candle.html"/>
+    <updated>2024-06-25T10:12:19.000Z</updated>
+    <summary type="html"><![CDATA[
+<p>仓库地址: <a href="https://github.com/otter-trade/coin-candle" target="_blank" rel="noopener noreferrer">https://github.com/otter-trade/coin-candle</a></p>
+<p>要解决的问题：</p>
+<ol>
+<li>国内获取数据需要<code>科学上网</code></li>
+<li>交易所请求规范和行为不统一，解析方式也不统一，请求参数也比较繁琐</li>
+<li>回测时对 K 线的消耗比较大，但是频繁去交易所获取效率太慢</li>
+<li>需要用到 K 线模块的服务太多了</li>
+</ol>]]></summary>
+    <content type="html"><![CDATA[
+<p>仓库地址: <a href="https://github.com/otter-trade/coin-candle" target="_blank" rel="noopener noreferrer">https://github.com/otter-trade/coin-candle</a></p>
+<p>要解决的问题：</p>
+<ol>
+<li>国内获取数据需要<code>科学上网</code></li>
+<li>交易所请求规范和行为不统一，解析方式也不统一，请求参数也比较繁琐</li>
+<li>回测时对 K 线的消耗比较大，但是频繁去交易所获取效率太慢</li>
+<li>需要用到 K 线模块的服务太多了</li>
+</ol>
+<blockquote>
+<p>其实团队内小伙伴写了一个版本的市场 K 线服务，但并不满意，于是花了一个周末的时间重新肝了一个版本。</p>
+</blockquote>
+<h2>安装方式</h2>
+<div class="language-bash line-numbers-mode" data-highlighter="shiki" data-ext="bash" data-title="bash" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">go</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> get</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> github.com/otter-trade/coin-candle</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div></div></div><h2>代码示例</h2>
+<div class="language-go line-numbers-mode" data-highlighter="shiki" data-ext="go" data-title="main.go" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">package</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">import</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> (</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">	"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#98C379">fmt</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">	"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#98C379">time</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">	"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#98C379">github.com/handy-golang/go-tools/m_cycle</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">	"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#98C379">github.com/handy-golang/go-tools/m_time</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">	"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#98C379">github.com/otter-trade/coin-candle/exchange_api</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">	"</span><span style="--shiki-light:#6F42C1;--shiki-dark:#98C379">github.com/otter-trade/coin-candle/global</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">func</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF"> main</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">() {</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// 初始化项目配置</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	global</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">SysInit</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">global</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">SysInitOpt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		LogPath</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:   </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">""</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,                                 </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 日志文件存放目录，缺省值：./logs</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		DataPath</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:  </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">""</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,                                 </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 数据文件存放目录，缺省值：./data</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		ProxyURLs</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">: []</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">string</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"http://127.0.0.1:10809"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}, </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 在拉取交易所数据时使用的代理池,没有代理则直接向交易所发起请求，国内可能会失败</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	})</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// 启动一个定时器</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	m_cycle</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">New</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">m_cycle</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">Opt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		Func</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">: </span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">func</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">() {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">			exchange_api</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">UpdateLocalGoodsList</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">() </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 更新商品列表至本地</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">			exchange_api</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">UpdateLocalTicker</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">()    </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 更新榜单数据至本地</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">		},</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		SleepTime</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">: </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">Hour</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> *</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66"> 4</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 每4小时执行一次更新</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	}).</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Start</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">()</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// ####### 获取商品列表的方法 #######</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	GoodsList</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> :=</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> exchange_api</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">GetGoodsList</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">()</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">	if</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> err</span><span style="--shiki-light:#D73A49;--shiki-dark:#56B6C2"> !=</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66"> nil</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"获取商品列表失败"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	}</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"GoodsList 商品总数:"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">len</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">GoodsList</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">))</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// ####### 获取单个商品的详情 #######</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	GoodsDetail</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> :=</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> exchange_api</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">GetGoodsDetail</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">exchange_api</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">GetGoodsDetailOpt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		GoodsId</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">: </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"BTC-USDT"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	})</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">	if</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> err</span><span style="--shiki-light:#D73A49;--shiki-dark:#56B6C2"> !=</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66"> nil</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"获取商品详情失败"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	}</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"GoodsDetail 最后更新时间"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">GoodsDetail</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">GoodsId</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">GoodsDetail</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">UpdateStr</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// ####### 获取榜单数据  #######</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	TickerList</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> :=</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> exchange_api</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">GetTickerList</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">()</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">	if</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> err</span><span style="--shiki-light:#D73A49;--shiki-dark:#56B6C2"> !=</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66"> nil</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"获取榜单数据失败"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	}</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"TickerList 今日上榜币种数量:"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">len</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">TickerList</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">))</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// ####### 任意时间点和任意币种的 K线数据获取 #######</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">	var</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> startTime</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> m_time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">GetUnixInt64</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">()</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// time := m_time.TimeParse(m_time.LaySP_ss, "2023-05-06 18:56:43")</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	time</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> :=</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> m_time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">TimeParse</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">m_time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">LaySP_ss</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"2024-05-21 18:55:43"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">	// time := m_time.GetUnixInt64()</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	klineMap</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> :=</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> exchange_api</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">GetKline</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">global</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">GetKlineOpt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		GoodsId</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:  </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"BTC-USDT"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		Bar</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:      </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"1m"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,                       </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 允许值 1m  5m  15m  30m  1h</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		EndTime</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:  </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,                       </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">//13 位毫秒时间戳</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		Limit</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:    </span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">320</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,                        </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 1-500 的正整数</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		Exchange</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">: []</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">string</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"okx"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"binance"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}, </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 需要请求的交易所， 目前只支持 okx 和 binance</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	})</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">	var</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> endTime</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> m_time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">GetUnixInt64</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">()</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">	var</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> diff</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> endTime</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> -</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> startTime</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"diff:"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">diff</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">	if</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> err</span><span style="--shiki-light:#D73A49;--shiki-dark:#56B6C2"> !=</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66"> nil</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">		fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"获取K线数据失败"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">err</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">	}</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	fmt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Println</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"kline 总长度"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">len</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">klineMap</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"binance"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">]))</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>安装依赖，创建文件，然后 执行 <code>go mod tidy</code> 和 <code>go  run  main.go</code> 查看打印结果</p>
+<h2>数据结构示意</h2>
+<p><strong>商品信息数据结构</strong></p>
+<blockquote>
+<p>这里综合了 <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer">币安</a>、<a href="https://www.okx.com" target="_blank" rel="noopener noreferrer">欧意</a>，两个交易所的公共货币，也就是说该列表的任意货币都可以在 两大交易所随时进行交易，当 <code>State</code> 不为 <code>live</code> 时，说明该币种在其中一个交易所的状态出现了问题。</p>
+</blockquote>
+<p>更新频率可以在程序初始化时自定，哪怕一分钟更新一次都没问题。</p>
+<div class="language-go line-numbers-mode" data-highlighter="shiki" data-ext="go" data-title="go" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">type</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> GoodsType</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> struct</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	GoodsId</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">       string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">            `json:"GoodsId"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">       // OtterTrade 的交易品ID 以 OKX 为准 如 BTC-USDT</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	State</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">         string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">            `json:"State"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">         // 交易品现货状态，默认；live OKX 现货，币安 现货 ，OKX 合约 有一家状态不对 则为 warning</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	UpdateUnix</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">    int64</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">             `json:"UpdateUnix"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">    // 更新时间戳</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	UpdateStr</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">            `json:"UpdateStr"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 更新时间</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	QuoteCcy</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">      string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">            `json:"QuoteCcy"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">      // 计价货币 如 USDT</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	BaseCcy</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">       string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">            `json:"BaseCcy"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">       // 基础货币 如 BTC</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Okx_SPOT_Info</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> OkxInstType</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">       `json:"Okx_SPOT_Info"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic"> // 欧意交易所 现货 的完整产品信息</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Okx_SWAP_Info</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> OkxInstType</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">       `json:"Okx_SWAP_Info"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic"> // 欧意交易所 合约 的完整产品信息</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	BinanceInfo</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">   BinanceSymbolType</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"BinanceInfo"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">   // 币安交易所的完整产品信息</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><div class="language-go line-numbers-mode" data-highlighter="shiki" data-ext="go" data-title="go" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">type</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> OkxInstType</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> struct</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	BaseCcy</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">      string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"baseCcy"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">      // 交易货币币种，如 BTC-USDT 中的 BTC ，仅适用于币币/币币杠杆</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	CtMult</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">       string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"ctMult"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">       // 合约乘数</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	CtType</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">       string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"ctType"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">       // 合约类型  linear：正向合约  inverse：反向合约</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	CtVal</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"ctVal"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 合约面值 如: 一个合约 0.01 个 BTC</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	CtValCcy</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"ctValCcy"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 合约面值计价币种 如 BTC</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	ExpTime</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">      string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"expTime"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">      // 下架时间</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	InstFamily</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">   string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"instFamily"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">   // 交易品种，如 BTC-USD，仅适用于杠杆/交割/永续/期权</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	InstID</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">       string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"instId"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">       // BTC-USDT   BTC-USDT-SWAP</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	InstType</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"instType"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 产品类型  SPOT 或者 SWAP</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Lever</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"lever"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 支持的最大杠杆倍率</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	ListTime</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"listTime"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 上架时间</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	LotSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"lotSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 最小下单数量 合约为 张数，现货则为 交易品数量 如 BTC 数量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	MaxIcebergSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"maxIcebergSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic"> // 冰山委托的单笔最大委托数量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	MaxLmtSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"maxLmtSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 限价单最大委托数量  合约的数量单位是张，现货的数量单位是USDT</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	MaxMktSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"maxMktSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 市价单的单笔最大委托数量  合约的数量单位是张，现货的数量单位是USDT</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	MaxStopSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">    string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"maxStopSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">    // 止盈止损市价委托的单笔最大委托数量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	MaxTriggerSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"maxTriggerSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic"> // 计划委托委托的单笔最大委托数量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	MaxTwapSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">    string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"maxTwapSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">    // 时间加权单的单笔最大委托数量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	MinSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"minSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 最小下单数量 合约的数量单位是张，现货的数量单位是交易货币</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	QuoteCcy</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"quoteCcy"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 计价货币币种，如 BTC-USDT 中的USDT ，仅适用于币币交易</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	SettleCcy</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">    string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"settleCcy"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">    // 结算币种 ，如 USDT</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	State</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"state"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 产品状态 live ：交易中 ，其余状态将被过滤</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	TickSz</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">       string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"tickSz"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">       // 下单价格精度 如 0.0001</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Uly</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">          string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"uly"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">          // 标的指数，如 BTC-USD</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><blockquote>
+<p>其余具体详细可查看源码。</p>
+</blockquote>
+<p><strong>榜单数据</strong></p>
+<div class="language-go line-numbers-mode" data-highlighter="shiki" data-ext="go" data-title="go" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">type</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> TickerType</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> struct</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> {</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	GoodsId</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"GoodsId"`</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Okx_InstID</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"Okx_InstID"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">  // 欧意的主键</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Binance_Symbol</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"Binance_Symbol"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic"> // 币安的主键</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	BaseCcy</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"BaseCcy"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 币种名称</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	State</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">          string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"State"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">          // 交易品现货状态，默认；live OKX 现货，币安 现货 ，OKX 合约 有一家状态不对 则为 warning</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Last</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">           string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"Last"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">           // 最新成交价</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Open24H</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"Open24H"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 24小时开盘价</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	High24H</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"High24H"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">        // 最高价</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Low24H</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">         string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"Low24H"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">         // 最低价</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	OKXVol24H</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">      string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"OKXVol24H"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">      // OKX 24小时成交量 USDT 数量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	BinanceVol24H</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">  string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"BinanceVol24H"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">  // Binance 24 小时成交 USDT 数量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	U_R24</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">          string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"U_R24"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">          // 涨幅 = (最新价-开盘价)/开盘价</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	Volume</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">         string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"Volume"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">         // 成交量总和</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	OkxVolRose</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">     string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"OkxVolRose"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">     // 欧意占比总交易量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	BinanceVolRose</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"BinanceVolRose"`</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic"> // 币安占比总交易量</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	TimeUnix</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">       int64</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">  `json:"TimeUnix"`</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">	TimeStr</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">        string</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379"> `json:"TimeStr"`</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><strong>K 线</strong></p>
+<blockquote>
+<p>因为 K 线的数据量体积比较大，所以最好的就是这种精巧的方式进行存储和传输</p>
+</blockquote>
+<div class="language-js line-numbers-mode" data-highlighter="shiki" data-ext="js" data-title="js" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#E06C75">  okx</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:[</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">    [</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">o</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">h</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">l</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">c</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">v</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">q</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">], </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">//时间戳，开盘价，最高价，最低价，收盘价，成交量，成交额</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">    [</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">time</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">o</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">h</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">l</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">c</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">v</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">q</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">  ],</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-dark:#E06C75">  binance</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:[],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>对应的 go 结构体如下</p>
+<div class="language-go line-numbers-mode" data-highlighter="shiki" data-ext="go" data-title="go" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">type</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> KlineSimpType</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> [</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">7</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">]</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">string</span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic"> // TimeUnix,O,H,L,C,V,Q</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">type</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> KlineExchangeMap</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> map</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">string</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">][]</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">KlineSimpType</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">  "okx"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> : []</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">KlineSimpType</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span></span>
+<span class="line"><span style="--shiki-light:#032F62;--shiki-dark:#98C379">  "binance"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> : []</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">KlineSimpType</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>解析方式</p>
+<div class="language-go line-numbers-mode" data-highlighter="shiki" data-ext="go" data-title="go" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">var</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> fetchData</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> http</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Get</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"xxxxx"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">var</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> KlineMap</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> KlineExchangeMap</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">jsoniter</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">Unmarshal</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">fetchData</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">, </span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">KlineMap</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">var</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> okxKline</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> KlineMap</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"okx"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">for</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> k</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF"> , </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> :=</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD"> range</span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75"> okxKline</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">  kItem</span><span style="--shiki-light:#D73A49;--shiki-dark:#E5C07B"> :=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B"> global</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">KlineType</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">    TimeStr</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:  </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">0</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">    O</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:        </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">1</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">    H</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:        </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">2</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">    L</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:        </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">3</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">    C</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:        </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">4</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">    V</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:        </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">5</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">    Q</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:        </span><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">item</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#D19A66">6</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">],</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">  }</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2>程序架构图</h2>
+<figure><figcaption></figcaption></figure>
+<h2>性能实测</h2>
+<p>清除掉本地所有的数据，第一次获取 okx 和 币安 320 条 <br>
+也就是需要每个交易所需要请求 4 次，一共 8 次请求，数据拼接整理并返回，加上本地网络共耗时 <code>3685毫秒</code>。 <br>
+第二次获取相同的数据，直接从本地读取，耗时 <code>2毫秒</code>， 也就是同样的数据一口气读取上万条本地耗时不会超过 <code>70毫秒</code> <br>
+【实测，曾经写一款小时版本的策略，一年数据量 8700 条，本地 MongoDB 读取耗时 283 毫秒 】 <br>
+而且这种 <code>无需索引直接通过算法直达的</code> 实现方式不会因为 文件数量的增多而增加查询耗时，其性能完全碾压各大数据库。
+并且使用和部署方式以及环境依赖都极为简单。</p>
+<blockquote>
+<p>当然，这是针对 K 线 这种特殊结构专门设计的。 通用型数据还是数据库更合适。</p>
+</blockquote>
+<figure><figcaption></figcaption></figure>
+<blockquote>
+<p>实测，一个文件占据空为 12kb; 无论是任何间隔的 K 线数据其一个文件体积都是一样的。<br>
+一个币种，一年的文件总数为 : <code>88 + 176 + 351 + 1052 + 5257 = 6924</code> 按照 7000 来算<br>
+<code>12 * 7000 = 84000 KB</code> 也就是说，一个币种一个交易所一年占用的存储空间约为 0.08 GB <br>
+一个交易所有效的交易币种不超过 200 ，一个交易所一年全部币种的数据全部进行本地存储 占据 16GB 空间
+也就是一台硬盘空间 <code>240 GB</code> 的服务器就能存下两个交易所 6 年积累的全部 K 线数据。</p>
+</blockquote>
+<h2>程序设计思路</h2>
+<p>因为是 根据 K 线的特点，基于本地文件专门设计的读写和寻址方式 ，所以即用即走，效率非常高，也非常轻量化，需要经常用到的数据就进行内存缓存。</p>
+<p>无需 redis，无需数据库。</p>
+<p>一开始是打算设计成独立服务去单独部署的，但是因为提供给用户使用的是 open-api ，无论怎么实现都需要 http 包一层。于是就设计成了 SDK 的方式。
+而且，将来开发 VSCode 插件时 也需要用到这个模块，SDK 的实现方式则更加灵活和便捷。</p>
+<h2>服务器分布式部署思路</h2>
+<p>可以罗列一份规则清单和转发地址 ，关于交易所 A 的请求转发到 服务器 A；关于币种 a-z 的可以转发到服务器 B；关于时间范围为 C 的转发到服务器 C .... <br>
+因为本地文件碎片化的属性，所以分布式部署除了增加转发时额外的网络 i/o 之外，其效率并未有差别，但是可以支持更多的高并发和存储空间。将来想要扩充交易所或者是 K 线类型可以说都非常容易且无缝衔接。</p>
+<p>如果提前计算好，还能充分利用各个服务器冗余的资源和空间。</p>
+<h2>数据的迁移 和 代理请求</h2>
+<p>在系统初始化时，设置好 <code>DataPath</code> ， 程序会自动接管该目录，并在请求来临时检查对应所需文件的完整性，数据不完整则会去交易所拿取最新数据并覆盖，如果数据完整，则会直接读取并返回。</p>
+<p>同一台机器也可以同时初始化多份程序，多个不同的数据目录同时进行读写。</p>
+<p>程序会自动补全缺失的文件：
+若一次请求 时间跨度超过了 4 个文件，其中三个文件本地有，则只会去交易所请求那一个没有的文件，其余文件直接读取返回。</p>
+<p>迁移数据只需要迁移对应的目录即可。</p>
+<p><strong>请求代理 IP 池的设定：</strong>
+程序初始化允许填写多个代理 ip 地址，它会随机使用其中可用的 IP 发出请求，以避免触发交易所的 IP 频率限制。同时也方便了国内用户家用电脑的本地数据调试。</p>
+<div class="language-go line-numbers-mode" data-highlighter="shiki" data-ext="go" data-title="go" style="--shiki-light:#24292e;--shiki-dark:#abb2bf;--shiki-light-bg:#fff;--shiki-dark-bg:#282c34"><pre class="shiki shiki-themes github-light one-dark-pro vp-code"><code><span class="line"><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 初始化项目配置</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">global</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#61AFEF">SysInit</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">global</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#E5C07B">SysInitOpt</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">  LogPath</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:   </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">""</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,                                 </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 日志文件存放目录，缺省值：./logs</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">  DataPath</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">:  </span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">""</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">,                                 </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 数据文件存放目录，缺省值：./data</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#E06C75">  ProxyURLs</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">: []</span><span style="--shiki-light:#D73A49;--shiki-dark:#C678DD">string</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">{</span><span style="--shiki-light:#032F62;--shiki-dark:#98C379">"http://127.0.0.1:10809"</span><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">}, </span><span style="--shiki-light:#6A737D;--shiki-dark:#7F848E;--shiki-light-font-style:inherit;--shiki-dark-font-style:italic">// 在拉取交易所数据时使用的代理池,没有代理则直接向交易所发起请求，国内可能会失败</span></span>
+<span class="line"><span style="--shiki-light:#24292E;--shiki-dark:#ABB2BF">})</span></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>]]></content>
+    <category term="OpenApi"/>
+    <published>2024-06-25T06:37:43.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">快速访问</title>
+    <id>https://doc.OtterTrade.com/posts/quick_links.html</id>
+    <link href="https://doc.OtterTrade.com/posts/quick_links.html"/>
+    <updated>2024-06-05T07:48:22.000Z</updated>
+    <summary type="html"><![CDATA[
+]]></summary>
+    <content type="html"><![CDATA[
+]]></content>
+    <category term="快速访问"/>
+    <published>2024-05-27T18:49:06.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">总目录</title>
+    <id>https://doc.OtterTrade.com/posts/</id>
+    <link href="https://doc.OtterTrade.com/posts/"/>
+    <updated>2024-05-27T18:38:37.000Z</updated>
+    <summary type="html"><![CDATA[
+]]></summary>
+    <content type="html"><![CDATA[
+]]></content>
+    <category term="总目录"/>
+    <published>2024-05-27T17:14:58.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">快速上手</title>
+    <id>https://doc.OtterTrade.com/get-started/</id>
+    <link href="https://doc.OtterTrade.com/get-started/"/>
+    <updated>2024-05-27T17:14:58.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">快速上手教程</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">快速上手教程</p>
+</div>
+]]></content>
+    <category term="快速上手"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">文章 1</title>
+    <id>https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A01.html</id>
+    <link href="https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A01.html"/>
+    <updated>2024-05-27T16:29:50.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 11</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 11</p>
+</div>
+]]></content>
+    <category term="快速上手"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">文章 2</title>
+    <id>https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A02.html</id>
+    <link href="https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A02.html"/>
+    <updated>2024-05-27T16:29:50.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 22</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 22</p>
+</div>
+]]></content>
+    <category term="快速上手"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">文章 3</title>
+    <id>https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A03.html</id>
+    <link href="https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A03.html"/>
+    <updated>2024-05-27T16:29:50.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 33</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 33</p>
+</div>
+]]></content>
+    <category term="快速上手"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">文章 4</title>
+    <id>https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A04.html</id>
+    <link href="https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A04.html"/>
+    <updated>2024-05-27T16:29:50.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 44</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 44</p>
+</div>
+]]></content>
+    <category term="快速上手"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">文章 5</title>
+    <id>https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A05.html</id>
+    <link href="https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A05.html"/>
+    <updated>2024-05-27T16:29:50.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 55</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 55</p>
+</div>
+]]></content>
+    <category term="快速上手"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">文章 6</title>
+    <id>https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A06.html</id>
+    <link href="https://doc.OtterTrade.com/get-started/%E6%96%87%E7%AB%A06.html"/>
+    <updated>2024-05-27T16:29:50.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 66</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">快速上手教程</p>
+<p>该文档等待编辑 66</p>
+</div>
+]]></content>
+    <category term="快速上手"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">OpenApi</title>
+    <id>https://doc.OtterTrade.com/open-api/</id>
+    <link href="https://doc.OtterTrade.com/open-api/"/>
+    <updated>2024-06-04T16:08:18.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">OpenApi 讲解</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">OpenApi 讲解</p>
+</div>
+]]></content>
+    <category term="OpenApi"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">OpenApi 2</title>
+    <id>https://doc.OtterTrade.com/open-api/api_2.html</id>
+    <link href="https://doc.OtterTrade.com/open-api/api_2.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 222</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 222</p>
+</div>
+]]></content>
+    <category term="OpenApi"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">OpenApi 3</title>
+    <id>https://doc.OtterTrade.com/open-api/api_3.html</id>
+    <link href="https://doc.OtterTrade.com/open-api/api_3.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 333</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 333</p>
+</div>
+]]></content>
+    <category term="OpenApi"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">OpenApi 4</title>
+    <id>https://doc.OtterTrade.com/open-api/api_4.html</id>
+    <link href="https://doc.OtterTrade.com/open-api/api_4.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 444</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 444</p>
+</div>
+]]></content>
+    <category term="OpenApi"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">OpenApi 5</title>
+    <id>https://doc.OtterTrade.com/open-api/api_5.html</id>
+    <link href="https://doc.OtterTrade.com/open-api/api_5.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 555</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">OpenApi</p>
+<p>该文档等待编辑 555</p>
+</div>
+]]></content>
+    <category term="OpenApi"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">指南 1</title>
+    <id>https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%971.html</id>
+    <link href="https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%971.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 11</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 11</p>
+</div>
+]]></content>
+    <category term="操作指南"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">指南 2</title>
+    <id>https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%972.html</id>
+    <link href="https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%972.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 22</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 22</p>
+</div>
+]]></content>
+    <category term="操作指南"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">指南 3</title>
+    <id>https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%973.html</id>
+    <link href="https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%973.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 33</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 33</p>
+</div>
+]]></content>
+    <category term="操作指南"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">指南 4</title>
+    <id>https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%974.html</id>
+    <link href="https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%974.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 44</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 44</p>
+</div>
+]]></content>
+    <category term="操作指南"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">指南 5</title>
+    <id>https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%975.html</id>
+    <link href="https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%975.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 55</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 55</p>
+</div>
+]]></content>
+    <category term="操作指南"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">指南 6</title>
+    <id>https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%976.html</id>
+    <link href="https://doc.OtterTrade.com/guide/%E6%8C%87%E5%8D%976.html"/>
+    <updated>2024-06-25T06:37:43.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 66</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">指南</p>
+<p>该文档等待编辑 66</p>
+</div>
+]]></content>
+    <category term="操作指南"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">关于我们</title>
+    <id>https://doc.OtterTrade.com/about/</id>
+    <link href="https://doc.OtterTrade.com/about/"/>
+    <updated>2024-06-04T11:13:07.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">关于我们</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">关于我们</p>
+</div>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">产品架构</title>
+    <id>https://doc.OtterTrade.com/about/%E4%BA%A7%E5%93%81%E6%9E%B6%E6%9E%84.html</id>
+    <link href="https://doc.OtterTrade.com/about/%E4%BA%A7%E5%93%81%E6%9E%B6%E6%9E%84.html"/>
+    <updated>2024-05-27T16:51:25.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">产品架构</p>
+<p>该文档等待编辑</p>
+</div>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">产品架构</p>
+<p>该文档等待编辑</p>
+</div>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">发展史</title>
+    <id>https://doc.OtterTrade.com/about/%E5%8F%91%E5%B1%95%E5%8F%B2.html</id>
+    <link href="https://doc.OtterTrade.com/about/%E5%8F%91%E5%B1%95%E5%8F%B2.html"/>
+    <updated>2024-05-27T16:51:25.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">发展史</p>
+<p>该文档等待编辑</p>
+</div>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">发展史</p>
+<p>该文档等待编辑</p>
+</div>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">团队</title>
+    <id>https://doc.OtterTrade.com/about/%E5%9B%A2%E9%98%9F.html</id>
+    <link href="https://doc.OtterTrade.com/about/%E5%9B%A2%E9%98%9F.html"/>
+    <updated>2024-05-27T16:51:25.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">团队</p>
+<p>该文档等待编辑</p>
+</div>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">团队</p>
+<p>该文档等待编辑</p>
+</div>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">愿景</title>
+    <id>https://doc.OtterTrade.com/about/%E6%84%BF%E6%99%AF.html</id>
+    <link href="https://doc.OtterTrade.com/about/%E6%84%BF%E6%99%AF.html"/>
+    <updated>2024-05-29T15:28:53.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">愿景</p>
+<p>该文档等待编辑</p>
+</div>
+<p>您好，这里是小净写的第一句话。
+您好，这里是小明写的第一句话。
+您好，这是小净第一次debug。</p>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">愿景</p>
+<p>该文档等待编辑</p>
+</div>
+<p>您好，这里是小净写的第一句话。
+您好，这里是小明写的第一句话。
+您好，这是小净第一次debug。</p>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">技术架构</title>
+    <id>https://doc.OtterTrade.com/about/%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84.html</id>
+    <link href="https://doc.OtterTrade.com/about/%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84.html"/>
+    <updated>2024-05-27T16:51:25.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">技术架构</p>
+<p>该文档等待编辑</p>
+</div>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">技术架构</p>
+<p>该文档等待编辑</p>
+</div>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">目标</title>
+    <id>https://doc.OtterTrade.com/about/%E7%9B%AE%E6%A0%87.html</id>
+    <link href="https://doc.OtterTrade.com/about/%E7%9B%AE%E6%A0%87.html"/>
+    <updated>2024-05-27T16:51:25.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">目标</p>
+<p>该文档等待编辑</p>
+</div>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">目标</p>
+<p>该文档等待编辑</p>
+</div>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">联系我们</title>
+    <id>https://doc.OtterTrade.com/about/%E8%81%94%E7%B3%BB%E6%88%91%E4%BB%AC.html</id>
+    <link href="https://doc.OtterTrade.com/about/%E8%81%94%E7%B3%BB%E6%88%91%E4%BB%AC.html"/>
+    <updated>2024-05-27T16:51:25.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">联系我们</p>
+<p>该文档等待编辑</p>
+</div>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container warning">
+<p class="hint-container-title">联系我们</p>
+<p>该文档等待编辑</p>
+</div>
+]]></content>
+    <category term="关于"/>
+    <published>2024-05-27T16:29:50.000Z</published>
+  </entry>
+  <entry>
+    <title type="text">操作指南</title>
+    <id>https://doc.OtterTrade.com/guide/</id>
+    <link href="https://doc.OtterTrade.com/guide/"/>
+    <updated>2024-06-04T16:08:18.000Z</updated>
+    <summary type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">操作指南</p>
+</div>
+<hr>
+]]></summary>
+    <content type="html"><![CDATA[
+<div class="hint-container info">
+<p class="hint-container-title">操作指南</p>
+</div>
+]]></content>
+    <category term="操作指南"/>
+    <published>2024-05-24T11:54:55.000Z</published>
+  </entry>
+</feed>
